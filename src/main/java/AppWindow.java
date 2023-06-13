@@ -51,7 +51,7 @@ public class AppWindow extends JFrame implements ActionListener {
             String folderPath = dialog.getSelectedFolderPath();
             if (folderPath != null) {
                 selectedFile = new File(folderPath);
-                sourcePath.setText("..." + folderPath.substring(folderPath.lastIndexOf("\\")));
+                sourcePath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!selectedFile.isDirectory()) {
                     JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
                 }
@@ -63,7 +63,7 @@ public class AppWindow extends JFrame implements ActionListener {
             String folderPath = dialog.getSelectedFolderPath();
             if (folderPath != null) {
                 destinationFile = new File(folderPath);
-                destinationPath.setText("..." + folderPath.substring(folderPath.lastIndexOf("\\")));
+                destinationPath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!destinationFile.isDirectory()) {
                     JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
                 }
