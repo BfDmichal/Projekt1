@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.*;
 
 public class AppWindow extends JFrame implements ActionListener {
     JButton selectButton;
@@ -77,7 +79,21 @@ public class AppWindow extends JFrame implements ActionListener {
             if (selectedFile != null && destinationFile != null && selectedFile.isDirectory() && destinationFile.isDirectory()) {
                 FileCopier fileCopier = new FileCopier();
                 fileCopier.copyDir(selectedFile, destinationFile, fileNamePattern.getText());
-                JOptionPane.showMessageDialog(null, "Ilość przekopiowanych plików: " + FileCopier.getFileCounter());
+                FileCopier.getPool().shutdown();
+
+                try {
+                    if(FileCopier.getPool().awaitTermination(1, TimeUnit.MINUTES)){
+                        JOptionPane.showMessageDialog(null, "Ilość przekopiowanych plików: " + FileCopier.getFileCounter());
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "Timeout!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                catch(InterruptedException exception){
+                    LogManager.getLogger().error("Pool has been interrupted");
+                }
+                
+                FileCopier.resetFileCounter();
                 clearControlsValue();
             } else {
                 JOptionPane.showMessageDialog(null, "Nie wybrano folderów");

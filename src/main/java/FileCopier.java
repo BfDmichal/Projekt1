@@ -1,18 +1,19 @@
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class FileCopier {
 
     private static int fileCounter;
+    private static ExecutorService pool;
 
     public FileCopier() {
         fileCounter = 0;
     }
 
     public void copyDir(File src, File destination, String fileNamePattern) {
-
         if (src.isDirectory()) {
             if (!destination.exists()) {
                 destination.mkdir();
@@ -29,28 +30,32 @@ public class FileCopier {
                 copyDir(srcFile, destFile, fileNamePattern);
             });
 
-            fileCounter += filesList.size();
-
         } else {
             copyFile(src, destination);
         }
     }
 
-    public static int getFileCounter() {
+    public synchronized static int getFileCounter() {
         return fileCounter;
     }
 
+    public static void resetFileCounter(){
+        fileCounter = 0;
+    }
+
+    static synchronized void incrementFileCounter(){
+        ++fileCounter;
+    }
+
+    static ExecutorService getPool(){
+        return pool;
+    }
+
     private void copyFile(File srcFile, File destinationFile) {
-        try (InputStream in = new FileInputStream(srcFile);
-             OutputStream out = new FileOutputStream(destinationFile)) {
-            int length;
-            byte[] bytes = new byte[1024];
-            while ((length = in.read(bytes)) > 0) {
-                out.write(bytes, 0, length);
-            }
-        } catch (IOException e) {
-            // TODO: nalezy dodac obsluge wyjatkow za pomoca LOGGER'a
-            e.printStackTrace();
+        if(pool == null || pool.isShutdown()){
+            pool = Executors.newFixedThreadPool(ThreadParams.getThreadAmount());
         }
+
+        pool.execute(new FileCopierThread(srcFile, destinationFile));
     }
 }

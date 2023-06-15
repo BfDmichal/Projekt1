@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import org.apache.logging.log4j.LogManager;
+
 import java.nio.file.LinkOption;
 
 class FileCopierThread implements Runnable {
@@ -21,12 +24,13 @@ class FileCopierThread implements Runnable {
     @Override
     public void run(){
         try {
+            LogManager.getLogger().debug(String.format("Trying to copy file %s to %s", srcPath, dstPath));
             Files.copy(Paths.get(srcPath), Paths.get(dstPath), LinkOption.NOFOLLOW_LINKS);
+            FileCopier.incrementFileCounter();
+            LogManager.getLogger().debug("Copied. fileCounter: " + FileCopier.getFileCounter());
         }
         catch(IOException e){
-            //TODO: Logger - Logger z Javy czy z log4j?
-            e.getLocalizedMessage();
-            e.printStackTrace();
+            LogManager.getLogger().error(e.getLocalizedMessage());
         }
     }
 }
