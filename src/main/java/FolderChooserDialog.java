@@ -5,10 +5,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * @author Julia Stefanowicz
+ * @author Michał Nowicki
+ * @author Michał Przyborowski
+ * @author Mateusz Grabiński
+ * @version 1.0
+ * Klasa FolderChooserDialog reprezentuje okno dialogowe do wyboru folderu.
+ */
+
 class FolderChooserDialog extends JDialog {
 
     private JFileChooser fileChooser;
     private String selectedFolderPath;
+
+    /**
+     * Tworzy nowy obiekt FolderChooserDialog.
+     *
+     * @param parent okno nadrzędne
+     */
 
     public FolderChooserDialog(AppWindow parent) {
         super(parent, true);
@@ -48,6 +63,12 @@ class FolderChooserDialog extends JDialog {
         add(fileChooser, BorderLayout.CENTER);
         add(selectButton, BorderLayout.SOUTH);
     }
+
+    /**
+     * Zwraca ścieżkę wybranego folderu.
+     *
+     * @return ścieżka wybranego folderu
+     */
 
     public String getSelectedFolderPath() {
         return selectedFolderPath;
