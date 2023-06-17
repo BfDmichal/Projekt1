@@ -22,8 +22,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
+                            <!--<addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>!-->
                             <mainClass>Projekt1</mainClass>
                         </manifest>
                     </archive>
@@ -31,5 +31,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <artifactId>log4j-core</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <version>2.20.0</version>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>logcaptor</artifactId>
+            <groupId>io.github.hakky54</groupId>
+            <version>2.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
