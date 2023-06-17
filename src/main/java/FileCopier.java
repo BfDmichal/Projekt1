@@ -3,13 +3,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Julia Stefanowicz
+ * @author Michał Nowicki
+ * @author Michał Przyborowski
+ * @author Mateusz Grabiński
+ * @version 1.0
+ * Klasa FileCopier jest odpowiedzialna za kopiowanie katalogów i plików z lokalizacji źródłowej do docelowej.
+ */
+
 public class FileCopier {
 
     private static int fileCounter;
+        
+    /**
+     * Konstruuje nowy obiekt FileCopier i inicjalizuje fileCounter.
+     */
 
     public FileCopier() {
         fileCounter = 0;
     }
+    
+    /**
+     * Kopiuje pliki z katalogu źródłowego do katalogu docelowego na podstawie podanego wzorca nazwy pliku.
+     * Jeśli źródłem jest katalog, rekurencyjnie kopiuje wszystkie pasujące pliki.
+     * Jeśli źródłem jest plik, kopiuje plik do miejsca docelowego.
+     *
+     * @param src katalog źródłowy lub plik do skopiowania
+     * @param destination katalog docelowy, do którego zostaną skopiowane pliki
+     * @param fileNamePattern wzorzec wyrażenia regularnego do dopasowania nazw plików
+     */
+
 
     public void copyDir(File src, File destination, String fileNamePattern) {
 
@@ -35,7 +59,12 @@ public class FileCopier {
             copyFile(src, destination);
         }
     }
-
+    /**
+     * Pobiera całkowitą liczbę skopiowanych plików.
+     *
+     * @return całkowita liczba skopiowanych plików
+     */
+    
     public static int getFileCounter() {
         return fileCounter;
     }
