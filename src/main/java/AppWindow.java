@@ -6,6 +6,15 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.*;
 
+/**
+* Klasa AppWindow reprezentuje główne okno aplikacji do kopiowania plików.
+* @author Julia Stefanowicz
+* @author Michał Nowicki
+* @author Michał Przyborowski
+* @author Mateusz Grabiński
+* @version 1.0
+*/
+
 public class AppWindow extends JFrame implements ActionListener {
     JButton selectButton;
     JButton destinationButton;
@@ -15,6 +24,12 @@ public class AppWindow extends JFrame implements ActionListener {
     JLabel sourcePath;
     JLabel destinationPath;
     JTextField fileNamePattern;
+
+    /**
+     * Tworzy nowe okno aplikacji.
+     *
+     * @throws HeadlessException jeśli jest brak zasobów okna
+     */
 
     public AppWindow() throws HeadlessException {
         fileNamePattern = new JTextField(".*");
@@ -45,6 +60,12 @@ public class AppWindow extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
+    /**
+     * Obsługuje zdarzenia akcji.
+     *
+     * @param e zdarzenie akcji
+     */
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == selectButton) {
@@ -53,7 +74,7 @@ public class AppWindow extends JFrame implements ActionListener {
             String folderPath = dialog.getSelectedFolderPath();
             if (folderPath != null) {
                 selectedFile = new File(folderPath);
-                sourcePath.setText("..." + folderPath.substring(folderPath.lastIndexOf("\\")));
+                sourcePath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!selectedFile.isDirectory()) {
                     JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
                 }
@@ -65,7 +86,7 @@ public class AppWindow extends JFrame implements ActionListener {
             String folderPath = dialog.getSelectedFolderPath();
             if (folderPath != null) {
                 destinationFile = new File(folderPath);
-                destinationPath.setText("..." + folderPath.substring(folderPath.lastIndexOf("\\")));
+                destinationPath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!destinationFile.isDirectory()) {
                     JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
                 }
