@@ -4,6 +4,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+* Klasa AppWindow reprezentuje główne okno aplikacji do kopiowania plików.
+* @author Julia Stefanowicz
+* @author Michał Nowicki
+* @author Michał Przyborowski
+* @author Mateusz Grabiński
+* @version 1.0
+*/
+
 public class AppWindow extends JFrame implements ActionListener {
     JButton selectButton;
     JButton destinationButton;
@@ -13,6 +22,12 @@ public class AppWindow extends JFrame implements ActionListener {
     JLabel sourcePath;
     JLabel destinationPath;
     JTextField fileNamePattern;
+
+    /**
+     * Tworzy nowe okno aplikacji.
+     *
+     * @throws HeadlessException jeśli jest brak zasobów okna
+     */
 
     public AppWindow() throws HeadlessException {
         fileNamePattern = new JTextField(".*");
@@ -42,6 +57,12 @@ public class AppWindow extends JFrame implements ActionListener {
         pack();
         this.setVisible(true);
     }
+
+    /**
+     * Obsługuje zdarzenia akcji.
+     *
+     * @param e zdarzenie akcji
+     */
 
     @Override
     public void actionPerformed(ActionEvent e) {
