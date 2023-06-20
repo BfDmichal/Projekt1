@@ -10,7 +10,6 @@ import java.security.MessageDigest;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,22 +20,24 @@ public class FileCopierThreadTest {
 
     @Test
     public void testFileCopierThread() throws IOException, InterruptedException {
-        
     	createTestFiles();
-        File srcDir = new File(TEST_DIR);
         File destDir = new File(DEST_DIR);
 
+        if(! destDir.exists()){
+            destDir.mkdir();
+        }
+
         // Utworz tablice plikow zrodlowych
-        Stream<Path> srcFiles = Files.walk(Paths.get(TEST_DIR), null);
+        Path[] srcFiles = Files.walk(Paths.get(TEST_DIR)).filter((Path path) -> (Paths.get(TEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
         assertNotNull(srcFiles);
-        int numFiles = (int) srcFiles.count();
+        int numFiles = srcFiles.length;
 
         // Utworz pule watkow
         ExecutorService executor = Executors.newFixedThreadPool(numFiles);
 
         // Uruchom watki FileCopierThread dla kazdego pliku zrodlowego 
-        for (Path srcFile : srcFiles.toArray(Path[]::new)) {
-            File destFile = new File(destDir, srcFile.toString());
+        for (Path srcFile : srcFiles) {
+            File destFile = new File(destDir, srcFile.getFileName().toString());
             Runnable worker = new FileCopierThread(srcFile.toString(), destFile.getAbsolutePath());
             executor.execute(worker);
         }
@@ -46,13 +47,13 @@ public class FileCopierThreadTest {
         executor.awaitTermination(10, TimeUnit.SECONDS);
 
         // Sprawdz, czy wszystkie pliki zostaly skopiowane
-        File[] destFiles = destDir.listFiles();
+        Path[] destFiles = Files.walk(Paths.get(DEST_DIR)).filter((Path path) -> (Paths.get(DEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
         assertNotNull(destFiles);
         assertEquals(numFiles, destFiles.length);
 
         // Porownaj zawartosc skopiowanych plikow z plikami zrodlowymi
-        for (Path srcFile : srcFiles.toArray(Path[]::new)) {
-            File destFile = new File(destDir, srcFile.toString());
+        for (Path srcFile : srcFiles) {
+            File destFile = new File(destDir, srcFile.getFileName().toString());
             assertTrue(areFilesEqual(srcFile, destFile.toPath()));
         }
     }

@@ -1,8 +1,8 @@
 package pl.wit;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
@@ -16,7 +16,7 @@ public class FolderChooserDialogTest {
     private AppWindow parent;
     private FolderChooserDialog dialog;
 
-    @Before
+    @BeforeAll
     public void setUp() {
         parent = new AppWindow();
         dialog = new FolderChooserDialog(parent);

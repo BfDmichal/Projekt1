@@ -1,8 +1,9 @@
 package pl.wit;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 
 import javax.swing.AbstractButton;
@@ -10,7 +11,7 @@ import javax.swing.AbstractButton;
 public class AppWindowTest {
     private AppWindow appWindow;
 
-    @Before
+    @BeforeAll
     public void setUp() {
         appWindow = new AppWindow();
     }
