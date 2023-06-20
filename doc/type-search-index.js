@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"pl.wit","l":"AppWindow"},{"p":"pl.wit","l":"FileCopier"},{"p":"pl.wit","l":"FileCopierThread"},{"p":"pl.wit","l":"FolderChooserDialog"},{"p":"pl.wit","l":"Projekt1"},{"p":"pl.wit","l":"ThreadParams"}];updateSearchResults();
