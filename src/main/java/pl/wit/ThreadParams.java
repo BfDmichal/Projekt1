@@ -1,3 +1,5 @@
+package pl.wit;
+
 class ThreadParams {
     private static int threadAmount = 10;
 
