@@ -30,6 +30,7 @@ class FolderChooserDialog extends JDialog {
         setTitle("Select Folder");
         setSize(500, 400);
         setLocationRelativeTo(parent);
+        setResizable(false);
 
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

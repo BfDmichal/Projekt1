@@ -4,16 +4,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.logging.log4j.*;
 
 /**
-* Klasa AppWindow reprezentuje główne okno aplikacji do kopiowania plików.
-* @author Julia Stefanowicz
-* @author Michał Nowicki
-* @author Michał Przyborowski
-* @author Mateusz Grabiński
-* @version 1.0
-*/
+ * Klasa AppWindow reprezentuje główne okno aplikacji do kopiowania plików.
+ *
+ * @author Julia Stefanowicz
+ * @author Michał Nowicki
+ * @author Michał Przyborowski
+ * @author Mateusz Grabiński
+ * @version 1.0
+ */
 
 public class AppWindow extends JFrame implements ActionListener {
     JButton selectButton;
@@ -35,7 +39,7 @@ public class AppWindow extends JFrame implements ActionListener {
         fileNamePattern = new JTextField(".*");
         sourcePath = new JLabel();
         destinationPath = new JLabel();
-        fileNamePattern.setBounds(55, 150, 400, 35);
+        fileNamePattern.setBounds(75, 150, 400, 35);
         fileNamePattern.setFont(new Font("Arial", Font.BOLD, 24));
         this.add(fileNamePattern);
         sourcePath.setBounds(20, 45, 320, 30);
@@ -47,7 +51,7 @@ public class AppWindow extends JFrame implements ActionListener {
         startButton = new JButton("START");
         selectButton = new JButton("Wybierz folder źródłowy");
         destinationButton = new JButton("Wybierz folder docelowy");
-        startButton.setBounds(200, 250, 100, 40);
+        startButton.setBounds(215, 250, 100, 40);
         selectButton.setBounds(20, 20, 200, 30);
         destinationButton.setBounds(320, 20, 200, 30);
         selectButton.addActionListener(this);
@@ -94,30 +98,34 @@ public class AppWindow extends JFrame implements ActionListener {
         }
 
         if (e.getSource() == startButton) {
+
             if (fileNamePattern.getText().isEmpty()) {
                 fileNamePattern.setText(".*");
             }
-            if (selectedFile != null && destinationFile != null && selectedFile.isDirectory() && destinationFile.isDirectory()) {
-                FileCopier fileCopier = new FileCopier();
-                fileCopier.copyDir(selectedFile, destinationFile, fileNamePattern.getText());
-                FileCopier.getPool().shutdown();
+            try {
+                if (selectedFile != null && destinationFile != null && selectedFile.isDirectory() && destinationFile.isDirectory()) {
+                    Pattern.compile(this.fileNamePattern.getText());
+                    FileCopier fileCopier = new FileCopier();
+                    fileCopier.copyDir(selectedFile, destinationFile, fileNamePattern.getText());
+                    FileCopier.getPool().shutdown();
 
-                try {
-                    if(FileCopier.getPool().awaitTermination(1, TimeUnit.MINUTES)){
-                        JOptionPane.showMessageDialog(null, "Ilość przekopiowanych plików: " + FileCopier.getFileCounter());
+                    try {
+                        if (FileCopier.getPool().awaitTermination(1, TimeUnit.MINUTES)) {
+                            JOptionPane.showMessageDialog(null, "Ilość przekopiowanych plików: " + FileCopier.getFileCounter());
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Timeout!", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (InterruptedException exception) {
+                        LogManager.getLogger().error("Pool has been interrupted");
                     }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Timeout!", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+
+                    FileCopier.resetFileCounter();
+                    clearControlsValue();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No directories selected.");
                 }
-                catch(InterruptedException exception){
-                    LogManager.getLogger().error("Pool has been interrupted");
-                }
-                
-                FileCopier.resetFileCounter();
-                clearControlsValue();
-            } else {
-                JOptionPane.showMessageDialog(null, "Nie wybrano folderów");
+            } catch (PatternSyntaxException a) {
+                JOptionPane.showMessageDialog(null, "Regular expression is not valid.");
             }
         }
     }
