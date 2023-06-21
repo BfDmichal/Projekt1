@@ -80,8 +80,11 @@ public class AppWindow extends JFrame implements ActionListener {
                 selectedFile = new File(folderPath);
                 sourcePath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!selectedFile.isDirectory()) {
-                    JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
+                    JOptionPane.showMessageDialog(null, "It is not directory.");
                 }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "No directory selected.");
             }
         }
         if (e.getSource() == destinationButton) {
@@ -92,8 +95,10 @@ public class AppWindow extends JFrame implements ActionListener {
                 destinationFile = new File(folderPath);
                 destinationPath.setText("..." + folderPath.substring(folderPath.lastIndexOf(File.separator)));
                 if (!destinationFile.isDirectory()) {
-                    JOptionPane.showMessageDialog(null, "Nie wybrano katalogu.");
+                    JOptionPane.showMessageDialog(null, "It is not directory.");
                 }
+            }else{
+                JOptionPane.showMessageDialog(null, "No directory selected.");
             }
         }
 
