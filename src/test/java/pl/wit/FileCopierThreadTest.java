@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -20,41 +21,45 @@ public class FileCopierThreadTest {
 
     @Test
     public void testFileCopierThread() throws IOException, InterruptedException {
-    	createTestFiles();
+        // Tworzenie testowych plików
+        createTestFiles();
         File destDir = new File(DEST_DIR);
 
-        if(! destDir.exists()){
+        if (!destDir.exists()) {
             destDir.mkdir();
         }
 
-        // Utworz tablice plikow zrodlowych
-        Path[] srcFiles = Files.walk(Paths.get(TEST_DIR)).filter((Path path) -> (Paths.get(TEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
-        assertNotNull(srcFiles);
-        int numFiles = srcFiles.length;
+        // Utworzenie tablicy plików źródłowych
+        Path[] srcFiles = Files.walk(Paths.get(TEST_DIR)).filter((Path path) ->
+                (Paths.get(TEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
+        int numFiles = (int) srcFiles.length;
 
-        // Utworz pule watkow
+        // Utworzenie puli wątków
         ExecutorService executor = Executors.newFixedThreadPool(numFiles);
 
-        // Uruchom watki FileCopierThread dla kazdego pliku zrodlowego 
+        // Uruchomienie wątków FileCopierThread dla każdego pliku źródłowego
         for (Path srcFile : srcFiles) {
             File destFile = new File(destDir, srcFile.getFileName().toString());
             Runnable worker = new FileCopierThread(srcFile.toString(), destFile.getAbsolutePath());
             executor.execute(worker);
         }
 
-        // Zakoncz pule watkow
+        // Zakończenie puli wątków
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.SECONDS);
 
-        // Sprawdz, czy wszystkie pliki zostaly skopiowane
-        Path[] destFiles = Files.walk(Paths.get(DEST_DIR)).filter((Path path) -> (Paths.get(DEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
+        // Sprawdzenie, czy wszystkie pliki zostały skopiowane
+        Path[] destFiles = Files.walk(Paths.get(DEST_DIR)).filter((Path path) ->
+                (Paths.get(DEST_DIR).compareTo(path) != 0)).toArray(Path[]::new);
         assertNotNull(destFiles);
         assertEquals(numFiles, destFiles.length);
 
-        // Porownaj zawartosc skopiowanych plikow z plikami zrodlowymi
+        // Porównanie zawartości skopiowanych plików z plikami źródłowymi
         for (Path srcFile : srcFiles) {
-            File destFile = new File(destDir, srcFile.getFileName().toString());
-            assertTrue(areFilesEqual(srcFile, destFile.toPath()));
+            if(! Files.isDirectory(srcFile, LinkOption.NOFOLLOW_LINKS)){
+                File destFile = new File(destDir, srcFile.getFileName().toString());
+                assertTrue(areFilesEqual(srcFile, destFile.toPath()));
+            }
         }
     }
 

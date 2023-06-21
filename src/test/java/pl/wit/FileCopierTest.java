@@ -3,6 +3,9 @@ package pl.wit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.*;
+import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileCopierTest {
@@ -20,23 +23,37 @@ public class FileCopierTest {
 
     @Test
     public void testCopyDir() throws IOException {
+        // Tworzenie testowych plików
         createTestFiles();
 
         File srcDir = new File(TEST_DIR);
         File destDir = new File(DEST_DIR);
 
+        // Wywołanie metody copyDir
         fileCopier.copyDir(srcDir, destDir, FILE_NAME_PATTERN);
 
-        // Sprawdzenie czy pliki zostaly skopiowane poprawnie do katalogu docelowego
+        FileCopier.getPool().shutdown();
+
+        try {
+            if(! FileCopier.getPool().awaitTermination(1, TimeUnit.MINUTES)){
+                fail("Timeout was reached for thread termination");
+            }
+        }
+        catch(InterruptedException e){
+            LogManager.getRootLogger().error(e.getMessage() + e.getStackTrace());
+        }
+
+        // Sprawdzenie czy pliki zostały skopiowane poprawnie do katalogu docelowego
         File[] destFiles = destDir.listFiles();
         assertNotNull(destFiles);
         assertEquals(3, destFiles.length);
 
         for (File destFile : destFiles) {
+            // Sprawdzenie, czy nazwy plików pasują do wzorca nazwy pliku
             assertTrue(destFile.getName().matches(FILE_NAME_PATTERN));
         }
 
-        // Sprawdzenie wartosci licznika plikow
+        // Sprawdzenie wartości licznika plików
         int fileCounter = FileCopier.getFileCounter();
         assertEquals(3, fileCounter);
     }
@@ -45,18 +62,14 @@ public class FileCopierTest {
         File testDir = new File(TEST_DIR);
         testDir.mkdir();
 
+        // Tworzenie testowych plików
         createFile(TEST_DIR + File.separator + "file1.txt", "Testowy plik 1");
         createFile(TEST_DIR + File.separator + "file2.txt", "Testowy plik 2");
         createFile(TEST_DIR + File.separator + "file3.txt", "Testowy plik 3");
 
-        try {
-        	File subDir1 = new File(TEST_DIR + "/subDir1");
-            subDir1.mkdir();
-            createFile(TEST_DIR + "/subDir1/file5.txt", "Plik podkatalogu");	
-        	}
-        catch (IOException e) {
-        	System.out.println(e.getMessage()+e.getStackTrace());
-        }
+        File subDir1 = new File(TEST_DIR + "/subDir1");
+        subDir1.mkdir();
+        createFile(TEST_DIR + "/subDir1/file5.txt", "Plik podkatalogu");
 
         File subDir2 = new File(TEST_DIR + "/subdir2");
         subDir2.mkdir();
